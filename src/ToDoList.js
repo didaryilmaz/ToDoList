@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";  
 
 const API_URL = "http://localhost:5103/api/ToDoList";
 
@@ -11,15 +12,7 @@ const ToDoList = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    } else {
-      fetchData();
-    }
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(API_URL, {
         headers: { Authorization: `Bearer ${token}` },
@@ -29,17 +22,43 @@ const ToDoList = () => {
     } catch (error) {
       console.error("Görevler alınırken hata:", error);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    } else {
+      try {
+        const decodedToken = jwtDecode(token);
+        if (!decodedToken || !decodedToken.userId) {
+          navigate("/login");
+        } else {
+          fetchData();
+        }
+      } catch (error) {
+        console.error("Token doğrulama hatası:", error);
+        navigate("/login");
+      }
+    }
+  }, [token, navigate, fetchData]);
 
   const gorevEkle = async () => {
     if (gorev.trim() !== "") {
       try {
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.userId; 
+
+        if (!userId) {
+          throw new Error("Geçerli bir kullanıcı kimliği bulunamadı.");
+        }
+
         const response = await axios.post(
           API_URL,
           {
             Name: gorev,
             IsCompleted: false,
             CreatedAt: new Date().toISOString(),
+            UserId: userId,
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -58,7 +77,7 @@ const ToDoList = () => {
         await axios.put(`${API_URL}/${id}`, { ...gorevTamam, IsCompleted: true }, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        fetchData(); // Listeyi güncelle
+        fetchData();
       } catch (error) {
         console.error("Tamamlama hatası:", error.message);
       }
@@ -126,4 +145,3 @@ const ToDoList = () => {
 };
 
 export default ToDoList;
- 
