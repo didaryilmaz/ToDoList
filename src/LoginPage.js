@@ -17,7 +17,7 @@ const LoginPage = () => {
 
       const token = response.data.token;
       localStorage.setItem("token", token);
-      localStorage.setItem("username", username); 
+      localStorage.setItem("username", username); // Kullanıcı adını da saklayabilirsin
 
       navigate("/todos");
     } catch (error) {
