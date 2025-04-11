@@ -46,29 +46,41 @@ const ToDoList = () => {
     if (gorev.trim() !== "") {
       try {
         const decodedToken = jwtDecode(token);
-        const userId = decodedToken.userId; 
-
+        const userId = decodedToken.userId;
+  
         if (!userId) {
-          throw new Error("Geçerli bir kullanıcı kimliği bulunamadı.");
+          console.log("Kullanıcı ID'si bulunamadı.");
+          return;
         }
-
-        const response = await axios.post(
-          API_URL,
-          {
-            Name: gorev,
-            IsCompleted: false,
-            CreatedAt: new Date().toISOString(),
-            UserId: userId,
+  
+        const response = await fetch("http://localhost:5103/api/ToDoList", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Auth header EKLENDİ
           },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setGorevler([...gorevler, response.data]);
-        setGorev("");
+          body: JSON.stringify({
+            name: gorev,
+            isCompleted: false,
+            createdAt: new Date().toISOString(),
+            userId: userId,
+          }),
+        });
+  
+        if (!response.ok) {
+          const hataMesaji = await response.text();
+          console.error("Sunucu hatası:", hataMesaji);
+          return;
+        }
+  
+        setGorev(""); // input'u temizle
+        fetchData();  // verileri yenile
       } catch (error) {
-        console.error("Görev ekleme hatası:", error.response?.data || error.message);
+        console.error("Görev ekleme hatası:", error.message);
       }
     }
   };
+  
 
   const tamamlandi = async (id) => {
     const gorevTamam = gorevler.find((g) => g.id === id);

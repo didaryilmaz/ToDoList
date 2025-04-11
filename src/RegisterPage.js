@@ -9,7 +9,19 @@ const RegisterPage = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        console.log('Kayıt işlemi başlatıldı:', { username, password });
         // API'ye POST isteği gönder
+
+const user = await fetch('http://localhost:5103/api/auth/getAll', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        user.json().then((data) => {
+            console.log('Kullanıcılar:', data);
+        }
+        );
         const response = await fetch('http://localhost:5103/api/auth/register', {
             method: 'POST',
             headers: {
@@ -22,7 +34,10 @@ const RegisterPage = () => {
             alert('Kayıt başarılı!');
             navigate('/login'); // login sayfasına yönlendir
         } else {
-            alert('Kayıt başarısız. Lütfen tekrar deneyin.');
+            response.json().then((data) => {
+                alert(`Kayıt hatası: ${data.message}`);
+            }
+            );
         }
     };
 
