@@ -6,12 +6,11 @@ const MainPage = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>ToDo List Uygulamasına Hoş Geldiniz</h1>
+      <h1 style={styles.title}>To Do List Uygulamasına Hoş Geldiniz</h1>
 
       <div style={styles.buttonGroup}>
         <button style={styles.button} onClick={() => navigate('/login')}>Giriş Yap</button>
         <button style={styles.button} onClick={() => navigate('/register')}>Kayıt Ol</button>
-        <button style={styles.button} onClick={() => navigate('/admin')}>Admin Panel</button>
       </div>
     </div>
   );

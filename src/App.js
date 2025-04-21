@@ -5,7 +5,7 @@ import RegisterPage from "./RegisterPage.js";
 import TodoPage from "./ToDoList.js";
 import MainPage from "./MainPage.js";
 import PrivateRoute from "./PrivateRoute.js";
-import AdminPage from "./AdminPage.js"; // ← yeni eklenen satır
+import AdminPage from "./AdminPage.js"; 
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/admin" element={<AdminPage />} /> {/* ← yeni eklenen route */}
+          <Route path="/admin" element={<AdminPage />} /> 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

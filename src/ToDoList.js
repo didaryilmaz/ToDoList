@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";  
 
-const API_URL = "http://localhost:5103/api/ToDoList";
+const API_URL = "http://localhost:5103/api/ToDoList/mytodos";
 
 const ToDoList = () => {
   const [gorev, setGorev] = useState("");
@@ -57,7 +57,7 @@ const ToDoList = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Auth header EKLENDİ
+            Authorization: `Bearer ${token}`, 
           },
           body: JSON.stringify({
             name: gorev,

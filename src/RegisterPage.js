@@ -1,43 +1,32 @@
-// src/RegisterPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('User'); // default olarak "User"
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        console.log('Kayıt işlemi başlatıldı:', { username, password });
-        // API'ye POST isteği gönder
+        const payload = { username, password, role };
 
-const user = await fetch('http://localhost:5103/api/auth/getAll', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        user.json().then((data) => {
-            console.log('Kullanıcılar:', data);
-        }
-        );
+        console.log('Gönderilen veri:', payload);
+
         const response = await fetch('http://localhost:5103/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify(payload),
         });
 
         if (response.ok) {
             alert('Kayıt başarılı!');
-            navigate('/login'); // login sayfasına yönlendir
+            navigate('/login');
         } else {
-            response.json().then((data) => {
-                alert(`Kayıt hatası: ${data.message}`);
-            }
-            );
+            const data = await response.json();
+            alert(`Kayıt hatası: ${data}`);
         }
     };
 
@@ -59,6 +48,10 @@ const user = await fetch('http://localhost:5103/api/auth/getAll', {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
+                <select value={role} onChange={(e) => setRole(e.target.value)} required>
+                    <option value="User">Kullanıcı</option>
+                    <option value="Admin">Admin</option>
+                </select>
                 <button type="submit">Kayıt Ol</button>
             </form>
         </div>

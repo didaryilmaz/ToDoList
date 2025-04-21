@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -14,16 +15,28 @@ const LoginPage = () => {
         username,
         password,
       });
-
+  
       const token = response.data.token;
+      const decodedToken = jwtDecode(token);
+  
+      const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  
+      console.log("JWT'den çözülen rol:", role);
+  
       localStorage.setItem("token", token);
-      localStorage.setItem("username", username); // Kullanıcı adını da saklayabilirsin
-
-      navigate("/todos");
+      localStorage.setItem("username", username);
+      localStorage.setItem("role", role);
+  
+      if (role === "Admin") {
+        navigate("/admin");
+      } else {
+        navigate("/todos");
+      }
     } catch (error) {
       alert("Giriş başarısız: " + (error.response?.data || error.message));
     }
   };
+  
 
   return (
     <div>

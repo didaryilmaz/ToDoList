@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -9,17 +10,27 @@ ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 const AdminPage = () => {
   const [rowData, setRowData] = useState([]);
+  const navigate = useNavigate(); 
+  const token = localStorage.getItem("token");
 
   const fetchTodos = useCallback(() => {
-    fetch(`http://localhost:5103/api/ToDoList/all`)
+    fetch(`http://localhost:5103/api/ToDoList/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(res => res.json())
       .then(data => setRowData(data.todos))
       .catch(err => console.error("Veri çekme hatası:", err));
-  }, []);
+  }, [token]);
 
   useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos]);
+    if (!token) {
+      navigate("/login");
+    } else {
+      fetchTodos();
+    }
+  }, [token, fetchTodos, navigate]); 
 
   const columnDefs = [
     { headerName: "ID", field: "id" },
