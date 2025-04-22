@@ -12,6 +12,7 @@ const AdminPage = () => {
   const [rowData, setRowData] = useState([]);
   const navigate = useNavigate(); 
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role"); // Rolü kontrol etmek için eklendi
 
   const fetchTodos = useCallback(() => {
     fetch(`http://localhost:5103/api/ToDoList/all`, {
@@ -27,10 +28,13 @@ const AdminPage = () => {
   useEffect(() => {
     if (!token) {
       navigate("/login");
+    } else if (role !== "Admin") {
+      alert("Bu sayfaya erişim izniniz yok.");
+      navigate("/todos"); // Veya navigate("/") gibi ana sayfa
     } else {
       fetchTodos();
     }
-  }, [token, fetchTodos, navigate]); 
+  }, [token, role, fetchTodos, navigate]); 
 
   const columnDefs = [
     { headerName: "ID", field: "id" },
